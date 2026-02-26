@@ -1,0 +1,53 @@
+# ========================================================
+# ZIL FRAMEWORK: MASTER CARGO WORKSPACE
+# Lokasi: core/Cargo.toml
+# ========================================================
+
+[workspace]
+# Mendefinisikan 3 sub-modul utama
+members = [
+    "zil_core",    # Otak logika utama (Scanner, NPU, Healer)
+    "pathfinder",  # Biner A (Pengintai)
+    "executor"     # Biner B (Pusat Komando)
+]
+
+# --- PROFIL RILIS (SANGAT KRITIS UNTUK BARE-METAL) ---
+[profile.release]
+# 1. Matikan Unwinding (Wajib untuk no_std)
+# Di dalam kernel, jika terjadi error, kita tidak bisa memunculkan pesan error 
+# berjenjang. Kita harus mematikan (abort) proses secara instan.
+panic = "abort"
+
+# 2. Link Time Optimization (LTO) — Mode Paling Agresif
+# 'fat' = compiler melihat seluruh program sekaligus lintas-crate.
+# Memungkinkan inlining fungsi antar-modul dan eliminasi dead code maksimal.
+# Biner menjadi lebih besar tapi instruksinya lebih optimal.
+lto = "fat"
+
+# 3. Optimasi Performa Maksimal
+# 3 = Kecepatan eksekusi tertinggi. Compiler melakukan:
+#   - Loop unrolling agresif
+#   - Inlining maksimal (termasuk fungsi besar)
+#   - Vectorization SIMD (ARM NEON / SVE)
+# Trade-off: biner lebih besar — sudah diterima.
+opt-level = 3
+
+# 4. Keamanan Siluman (Stealth)
+# Membuang semua simbol nama fungsi (seperti 'find_proc_ucred').
+# Jika Apple atau peneliti keamanan menganalisis memori kernel Anda, 
+# mereka hanya akan melihat blok data heksadesimal acak, bukan nama fungsi Rust.
+strip = "symbols"
+
+# 5. Jumlah unit kompilasi
+# 1 = Compiler punya visibilitas penuh ke seluruh kode dalam satu pass.
+# Memungkinkan optimasi antar-fungsi yang paling agresif.
+codegen-units = 1
+
+# 6. Nonaktifkan overflow checks (performa)
+# Di bare-metal kernel, kita handle arithmetic safety secara manual.
+# Overflow check default Rust menambah instruksi cabang di setiap operasi aritmatika.
+overflow-checks = false
+
+# 7. Nonaktifkan debug assertions
+# Relevant hanya di debug build, tapi eksplisit agar tidak ada kejutan.
+debug-assertions = false

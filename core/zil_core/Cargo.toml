@@ -1,0 +1,16 @@
+# Lokasi: core/zil_core/Cargo.toml
+
+[package]
+name    = "zil_core"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+name       = "zil_core"
+path       = "src/lib.rs"
+crate-type = ["rlib"]   # rlib = bisa di-link ke crate Rust lain
+
+[dependencies]
+# libm: pure-math crate tanpa ketergantungan OS — wajib no_std compatible
+# default-features = false: matikan fitur std agar kompatibel dengan no_std
+libm = { version = "0.2.8", default-features = false }

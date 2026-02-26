@@ -1,0 +1,20 @@
+# Lokasi: core/pathfinder/Cargo.toml
+
+[package]
+name    = "zil_pathfinder"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+zil_core = { path = "../zil_core" }
+
+[[bin]]
+# Pathfinder dikompilasi sebagai binary — entry point _start().
+# Output-nya akan di-link bersama C dan ASM oleh Makefile.
+name = "zil_pathfinder"
+path = "src/main.rs"
+
+[lib]
+name       = "zil_pathfinder"
+path       = "src/main.rs"
+crate-type = ["staticlib"]

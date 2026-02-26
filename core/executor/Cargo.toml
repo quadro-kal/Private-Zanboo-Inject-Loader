@@ -1,0 +1,22 @@
+# Lokasi: core/executor/Cargo.toml
+
+[package]
+name    = "zil_executor"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+zil_core = { path = "../zil_core" }
+
+[[bin]]
+# INI ADALAH KUNCI INTEGRASI MAKEFILE
+# Dikompilasi sebagai binary yang menghasilkan entry point _start().
+# Makefile kemudian linking hasilnya bersama C dan ASM via ld.
+name = "zil_executor"
+path = "src/main.rs"
+
+# Kita juga ekspor sebagai staticlib agar bisa di-link oleh Makefile
+[lib]
+name        = "zil_executor"
+path        = "src/main.rs"
+crate-type  = ["staticlib"]
